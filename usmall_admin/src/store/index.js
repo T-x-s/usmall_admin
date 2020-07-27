@@ -5,6 +5,7 @@ Vue.use(Vuex)
 import {state,mutations,getters} from "./mutations";
 import actions from "./actions";
 import menu from './modules/menu'
+import role from './modules/role'
 
 export default new Vuex.Store({
     state,
@@ -12,6 +13,7 @@ export default new Vuex.Store({
     getters,
     actions,
     modules:{
-        menu
+        menu,
+        role
     }
 })
