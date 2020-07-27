@@ -1,0 +1,63 @@
+<template>
+  <div>
+    <el-button type="primary" @click="add">添加</el-button>
+    <!-- 弹框 -->
+    <v-add :info="info" ref="add"></v-add>
+    <!-- 列表 -->
+    <v-list @edit="edit"></v-list>
+  </div>
+</template>
+<script>
+import vAdd from "./components/add";
+import vList from "./components/list";
+export default {
+  components: {
+    vAdd,
+    vList,
+  },
+  data() {
+    return {
+      
+      //传递给子组件的信息
+      info: {
+          //弹框的出现状态
+        show: false,
+      },
+    };
+  },
+  methods: {
+    load(tree, treeNode, resolve) {
+      setTimeout(() => {
+        resolve([
+          {
+            id: 31,
+            date: "2016-05-01",
+            name: "王小虎",
+            address: "上海市普陀区金沙江路 1519 弄",
+          },
+          {
+            id: 32,
+            date: "2016-05-01",
+            name: "王小虎",
+            address: "上海市普陀区金沙江路 1519 弄",
+          },
+        ]);
+      }, 1000);
+    },
+    add() {
+      this.info.show = true;
+      this.info.title = "菜单添加";
+      this.info.isAdd = true;
+    },
+    //点击了编辑
+    edit(id){
+      this.info.show = true;
+      this.info.title = "菜单编辑";
+      this.info.isAdd = false;
+      this.$refs.add.getDetail(id);
+    }
+  },
+  mounted() {},
+};
+</script>
+<style scoped></style>
