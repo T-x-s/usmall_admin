@@ -2,12 +2,23 @@
   <div>
     <el-dialog :title="info.title" :visible.sync="info.show">
       <el-form :model="form">
-        <el-form-item label="角色名称" label-width="80px">
-          <el-input v-model="form.rolename" autocomplete="off"></el-input>
+        <el-form-item label="所属角色" label-width="80px">
+          <el-select v-model="form.roleid">
+            <el-option label="--请选择--" value disabled></el-option>
+            <!-- 动态数据 -->
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.rolename"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="角色权限" label-width="80px" >
-          <!-- :default-checked-keys="[5]" -->
-          <el-tree :data="menuList" show-checkbox node-key="id" :default-checked-keys="defaultKey" :props="defaultProps" ref="tree"></el-tree>
+        <el-form-item label="用户名" label-width="80px">
+          <el-input v-model="form.username"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" label-width="80px">
+          <el-input v-model="form.password" show-password></el-input>
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
           <el-switch v-model="form.status" :active-value="1" :inactive-value="2"></el-switch>
@@ -23,107 +34,104 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { requestRoleAdd, requestRoleDetail,requestRoleUpdate,requestRoleList } from "../../../util/request.js";
+import {
+  requestManageAdd,
+  requestManageDetail,
+  requestManageUpdate,
+  requestManageList,
+} from "../../../util/request.js";
 import { successAlert, warningAlert } from "../../../util/alert.js";
 export default {
   props: ["info"],
   components: {},
   computed: {
     ...mapGetters({
-      menuList: "menu/list",
+      roleList: "role/list",
     }),
   },
   data() {
     return {
       //提交给后端的数据
       form: {
-        rolename: "",
-        menu: "",
+        roleid: "",
+        username: "",
+        password: "",
         status: 1,
       },
-      defaultProps: {
-        children: "children",
-        label: "title",
-      },
-      defaultKey: [],
     };
   },
   mounted() {
     //如果之前menu的list没有请求，就发请求，请求过了，就不发了
-    if (this.menuList.length === 0) {
-      this.requestMenuList();
+    if (this.roleList.length === 0) {
+      this.requestRoleList();
       // console.log(1);
     }
   },
   methods: {
     ...mapActions({
-      requestMenuList: "menu/requestList",
-      requestRoleList: "role/requestList"
+      requestRoleList: "role/requestList",
+      requestTotal: "manage/requestTotal",
     }),
     //取消
     cancel() {
       this.info.show = false;
       //清空权限2
-      if(!this.info.isAdd){
+      if (!this.info.isAdd) {
         this.empty();
       }
     },
     //清空
     empty() {
       this.form = {
-        rolename: "",
-        menu: "",
+        roleid: 0,
+        username: "",
+        password: "",
         status: 1,
       };
-      //将树形结构的数据，选中的key值置空
-      this.$refs.tree.setCheckedKeys([]);
     },
     //添加
     add() {
-      //获取tree的key赋值给form.menus
-      this.form.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
       //获取添加角色的请求
-      requestRoleAdd(this.form).then((res) => {
+      requestManageAdd(this.form).then((res) => {
         if (res.data.code == 200) {
           //弹框取消
           this.cancel();
           //清空
           this.empty();
           //重新获取列表数据
-          this.requestRoleList();
-          successAlert(res.data.list);
+          this.requestManageList();
+          //重新获取总的数量
+          this.requestTotal();
+          successAlert(res.data.msg);
         } else {
           warningAlert(res.data.msg);
         }
       });
-
     },
     //获取一条数据
     getDetail(id) {
       //ajax
-      requestRoleDetail({ id: id }).then((res) => {
+      requestManageDetail({ uid: id }).then((res) => {
         this.form = res.data.list;
-        this.form.id = id;
-        this.defaultKey = JSON.parse(res.data.list.menus);
+        // this.form.uid = id;
+        this.form.password = "";
       });
     },
-    update(){
-      //获取tree的key赋值给form.menus
-      this.form.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
-      requestRoleUpdate(this.form).then(res=>{
+    update() {
+      requestManageUpdate(this.form).then((res) => {
         if (res.data.code == 200) {
           //弹框取消
           this.cancel();
           //清空
           this.empty();
           //重新获取列表数据
-          this.requestRoleList();
+          this.requestManageList();
           successAlert("修改成功");
         } else {
           warningAlert(res.data.msg);
         }
-      })
-    }
+      });
+    },
   },
 };
 </script>

@@ -24,7 +24,8 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button type="primary" @click="edit(scope.row.id)">编辑</el-button>
-          <el-button type="danger" @click="del(scope.row.id)">删除</el-button>
+          <!-- <el-button type="danger" @click="del(scope.row.id)">删除</el-button> -->
+          <del-btn @confirm="dele(scope.row.id)"></del-btn>
         </template>
       </el-table-column>
     </el-table>
@@ -32,8 +33,8 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-import {requestMenuDelete} from  "../../../util/request"
-import { successAlert, warningAlert } from '../../../util/alert';
+import { requestMenuDelete } from "../../../util/request";
+import { successAlert, warningAlert } from "../../../util/alert";
 export default {
   components: {},
   computed: {
@@ -49,31 +50,43 @@ export default {
       requestList: "menu/requestList",
     }),
     //点击了编辑按钮
-    edit(id){
-        this.$emit("edit",id)
+    edit(id) {
+      this.$emit("edit", id);
     },
     //删除按钮
-    del(id){
-        this.$confirm('你确定要删除吗?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-            requestMenuDelete({id:id}).then(res=>{
-                if(res.data.code==200){
-                    successAlert("删除成功！");
-                    this.requestList();
-                }else{
-                    warningAlert("删除失败！");
-                }
-            })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-    }
+    // del(id) {
+    //   this.$confirm("你确定要删除吗?", "提示", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //     type: "warning",
+    //   })
+    //     .then(() => {
+    //       requestMenuDelete({ id: id }).then((res) => {
+    //         if (res.data.code == 200) {
+    //           successAlert("删除成功！");
+    //           this.requestList();
+    //         } else {
+    //           warningAlert("删除失败！");
+    //         }
+    //       });
+    //     })
+    //     .catch(() => {
+    //       this.$message({
+    //         type: "info",
+    //         message: "已取消删除",
+    //       });
+    //     });
+    // },
+    dele(id) {
+      requestMenuDelete({ id: id }).then((res) => {
+        if (res.data.code == 200) {
+          successAlert("删除成功！");
+          this.requestList();
+        } else {
+          warningAlert(res.data.msg);
+        }
+      });
+    },
   },
   mounted() {
     this.requestList();

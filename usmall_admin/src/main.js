@@ -8,7 +8,7 @@ import "./assets/css/reset.css"
 //2、处理公共组件
 import commonComponents from "./components/index"
 for(let i in commonComponents){
-  Vue.components(i,commonComponents[i])
+  Vue.component(i,commonComponents[i])
 }
 //3、处理过滤器
 import filters from "./filters"
