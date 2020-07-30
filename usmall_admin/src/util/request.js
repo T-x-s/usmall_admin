@@ -130,8 +130,109 @@ export const requestManageDelete = params =>axios({
   data: qs.stringify(params)
 })
 //管理员登录
-export const requestManageLogin = params =>axios({
+export const requestLogin = params =>axios({
   url:baseurl+"/api/userlogin",
   method:"post",
   data: qs.stringify(params)
 })
+
+//商品分类添加
+export const requestCateAdd = params => {
+  var formData = new FormData();
+  for(let i in params){
+    formData.append(i,params[i])
+  }
+  return axios({
+    url: baseurl + "/api/cateadd",
+    method: "post",
+    data:formData
+  });
+};
+//商品分类列表
+export const requestCateList = params => {
+  return axios({
+    url: baseurl + "/api/catelist",
+    method: "get",
+    params: params
+  });
+};
+//商品分类某一条数据的方法
+export const requestCateDetail = params => {
+  return axios({
+    url: baseurl + "/api/cateinfo",
+    method: "get",
+    params
+  });
+};
+//商品分类修改
+export const requestCateUpdate = params => {
+  var formData = new FormData();
+  for(let i in params){
+    formData.append(i,params[i])
+  }
+  return axios({
+    url: baseurl + "/api/cateedit",
+    method: "post",
+    data:formData
+  });
+};
+//商品分类删除
+export const requestCateDelete = params => {
+  return axios({
+    url: baseurl + "/api/catedelete",
+    method: "post",
+    data: qs.stringify(params)
+  });
+};
+
+
+//商品规格添加
+export const requestSpecAdd = (params) => {
+  return axios({
+      url: baseurl + "/api/specsadd",
+      method: "post",
+      data: qs.stringify(params)
+  })
+}
+
+//商品规格总数
+export const requestSpecCount = () => {
+  return axios({
+      url: baseurl + "/api/specscount",
+      method: "get"
+  })
+}
+//商品规格列表
+export const requestSpecList = (params) => {
+  return axios({
+      url: baseurl + "/api/specslist",
+      method: "get",
+      params: params
+  })
+}
+
+//商品规格某一个条数据
+export const requestSpecDetail = params => {
+  return axios({
+      url: baseurl + "/api/specsinfo",
+      method: "get",
+      params
+  })
+}
+//商品规格修改
+export const requestSpecUpdate = params => {
+  return axios({
+      url: baseurl + "/api/specsedit",
+      method: "post",
+      data: qs.stringify(params)
+  })
+}
+
+//商品规格删除
+export const requestSpecDelete = params => {
+  return axios({
+      url: baseurl + "/api/specsdelete",
+      method: "post",
+      data: qs.stringify(params)
+  })
+}

@@ -2,21 +2,36 @@
   <div class="bg">
     <div class="loginBox">
       <p>登录</p>
-      <el-input placeholder="请输入内容" clearable> </el-input>
-      <el-input placeholder="请输入密码" show-password></el-input>
+      <el-input v-model="user.username" placeholder="请输入内容" clearable> </el-input>
+      <el-input v-model="user.password" placeholder="请输入密码" show-password></el-input>
       <el-button type="primary" @click="login">登录</el-button>
     </div>
   </div>
 </template>
 <script>
+import {requestLogin} from "../../util/request"
+import {successAlert,warningAlert} from "../../util/alert"
 export default {
   components: {},
   data() {
-    return {};
+    return {
+      user:{
+        username:"",
+        password:""
+      }
+    };
   },
   methods: {
+    //登录
     login(){
-      this.$router.push("/index")
+      requestLogin(this.user).then(res=>{
+        if(res.data.code==200){
+          successAlert(res.data.msg)
+          this.$router.push("/index")
+        }else{
+          warningAlert(res.data.msg)
+        }
+      })
     }
   },
   mounted() {}

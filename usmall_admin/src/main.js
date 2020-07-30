@@ -22,6 +22,9 @@ import store from "./store";
 //6、element-ui
 import ElementUi from "element-ui";
 import 'element-ui/lib/theme-chalk/index.css';
+
+//图片前缀
+Vue.prototype.$imgPre="http://localhost:3000"
 Vue.use(ElementUi)
 /* eslint-disable no-new */
 new Vue({

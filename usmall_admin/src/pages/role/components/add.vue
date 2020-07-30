@@ -62,6 +62,7 @@ export default {
     }),
     //取消
     cancel() {
+      this.empty();
       this.info.show = false;
       //清空权限2
       if(!this.info.isAdd){

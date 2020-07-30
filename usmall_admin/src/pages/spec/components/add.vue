@@ -1,24 +1,14 @@
 <template>
-  <div>
+  <div class="add">
     <el-dialog :title="info.title" :visible.sync="info.show">
       <el-form :model="form">
-        <el-form-item label="所属角色" label-width="80px">
-          <el-select v-model="form.roleid">
-            <el-option label="--请选择--" value disabled></el-option>
-            <!-- 动态数据 -->
-            <el-option
-              v-for="item in roleList"
-              :key="item.id"
-              :label="item.rolename"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+        <el-form-item label="规格名称" label-width="80px">
+          <el-input v-model="form.specsname"></el-input>
         </el-form-item>
-        <el-form-item label="用户名" label-width="80px">
-          <el-input v-model="form.username"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" label-width="80px">
-          <el-input v-model="form.password" show-password></el-input>
+        <el-form-item v-for="(item,index) in attrArr" :key="index" label="规格属性" label-width="80px">
+          <el-input v-model="item.value"></el-input>
+          <el-button type="primary" v-if="index==0" @click="addArr">新增规格属性</el-button>
+          <el-button type="danger" v-else @click="delArr(index)">删除</el-button>
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
           <el-switch v-model="form.status" :active-value="1" :inactive-value="2"></el-switch>
@@ -35,10 +25,10 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import {
-  requestManageAdd,
-  requestManageDetail,
-  requestManageUpdate,
-  requestManageList,
+  requestSpecAdd,
+  requestSpecDetail,
+  requestSpecUpdate,
+  requestSpecList,
 } from "../../../util/request.js";
 import { successAlert, warningAlert } from "../../../util/alert.js";
 export default {
@@ -53,22 +43,22 @@ export default {
     return {
       //提交给后端的数据
       form: {
-        roleid: "",
-        username: "",
-        password: "",
+        specsname: "",
+        attrs: "",
         status: 1,
       },
+      attrArr: [
+        {
+          value: "",
+        },
+      ],
     };
   },
   mounted() {
-    //如果之前menu的list没有请求，就发请求，请求过了，就不发了
-    if (this.roleList.length === 0) {
-      this.requestRoleList();
-    }
   },
   methods: {
     ...mapActions({
-      requestRoleList: "role/requestList",
+      requestList: "spec/requestList",
       requestTotal: "manage/requestTotal",
     }),
     //取消
@@ -82,25 +72,44 @@ export default {
     },
     //清空
     empty() {
-      this.form = {
-        roleid: 0,
-        username: "",
-        password: "",
+      (this.form = {
+        specsname: "",
+        attrs: "",
         status: 1,
-      };
+      }),
+        (this.attrArr = {
+          value: "",
+        });
+    },
+    //添加规格属性
+    addArr() {
+      this.attrArr.push({
+        value: "",
+      });
+    },
+    //删除规格属性
+    delArr(index) {
+      this.attrArr.splice(index, 1);
     },
     //添加
     add() {
-      //获取添加角色的请求
-      requestManageAdd(this.form).then((res) => {
+      //判断属性不为空
+      if (this.attrArr.some((item) => item.value == "")) {
+        warningAlert("属性规格均不能为空");
+        return;
+      }
+      //将属性组合成数组并转成字符串
+      this.form.attrs = JSON.stringify(this.attrArr.map((item) => item.value));
+      //获取添加数据的请求
+      requestSpecAdd(this.form).then((res) => {
         if (res.data.code == 200) {
           //弹框取消
           this.cancel();
           //清空
           this.empty();
           //重新获取列表数据
-          this.requestManageList();
-          //重新获取总的数量
+          this.requestList();
+          //   //重新获取总的数量
           this.requestTotal();
           successAlert(res.data.msg);
         } else {
@@ -110,22 +119,28 @@ export default {
     },
     //获取一条数据
     getDetail(id) {
-      //ajax
-      requestManageDetail({ uid: id }).then((res) => {
-        this.form = res.data.list;
-        // this.form.uid = id;
-        this.form.password = "";
+      //ajax 
+      requestSpecDetail({ id: id }).then((res) => {
+        this.form = res.data.list[0];
+        // console.log(this.attrArr)
+        this.attrArr = JSON.parse(res.data.list[0].attrs).map(item=>({
+            value:item
+            //return形式不加()
+            //   return{
+            //     value:item
+            // }
+        }))
       });
     },
     update() {
-      requestManageUpdate(this.form).then((res) => {
+      requestSpecUpdate(this.form).then((res) => {
         if (res.data.code == 200) {
           //弹框取消
           this.cancel();
           //清空
           this.empty();
           //重新获取列表数据
-          this.requestManageList();
+        //   this.requestManageList();
           successAlert("修改成功");
         } else {
           warningAlert(res.data.msg);
@@ -135,5 +150,16 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style scoped lang="stylus">
+.add >>> .el-form-item__content {
+  display: flex !important;
+}
+
+.el-input {
+  flex: 1;
+}
+
+.el-button {
+  width: auto;
+}
 </style>

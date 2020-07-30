@@ -76,6 +76,7 @@ export default {
         "/goods",
         "/banner",
         "/seckill",
+        "/member"
       ],
       form: {
         pid: 0,
@@ -90,6 +91,7 @@ export default {
   },
   methods: {
     cancel() {
+      this.empty();
       this.info.show = false;
     },
     ...mapActions({

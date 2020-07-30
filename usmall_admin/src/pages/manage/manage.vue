@@ -28,13 +28,13 @@ methods:{
     //点击了添加按钮
     add(){
         this.info.show = true;
-        this.info.title="添加角色";
+        this.info.title="添加商品分类";
         this.info.isAdd = true;
     },
     //点击了编辑
     edit(id){
         this.info.show = true;
-        this.info.title="编辑角色";
+        this.info.title="编辑商品分类";
         this.$refs.add.getDetail(id);
         this.info.isAdd = false;
     }
