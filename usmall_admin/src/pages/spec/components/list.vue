@@ -60,7 +60,7 @@ export default {
       this.$emit("edit", id);
     },
     //删除
-    del(id) {
+    del(id) { 
       requestSpecDelete({ id: id }).then((res) => {
         if (res.data.code == 200) {
           successAlert("删除成功");

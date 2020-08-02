@@ -59,7 +59,7 @@ export default {
   methods: {
     ...mapActions({
       requestList: "spec/requestList",
-      requestTotal: "manage/requestTotal",
+      requestTotal: "spec/requestTotal",
     }),
     //取消
     cancel() {
@@ -109,7 +109,7 @@ export default {
           this.empty();
           //重新获取列表数据
           this.requestList();
-          //   //重新获取总的数量
+          //重新获取总的数量
           this.requestTotal();
           successAlert(res.data.msg);
         } else {
@@ -133,6 +133,13 @@ export default {
       });
     },
     update() {
+       //判断属性不为空
+      if (this.attrArr.some((item) => item.value == "")) {
+        warningAlert("属性规格均不能为空");
+        return;
+      }
+      //将属性组合成数组并转成字符串
+      this.form.attrs = JSON.stringify(this.attrArr.map((item) => item.value));
       requestSpecUpdate(this.form).then((res) => {
         if (res.data.code == 200) {
           //弹框取消
@@ -140,7 +147,7 @@ export default {
           //清空
           this.empty();
           //重新获取列表数据
-        //   this.requestManageList();
+          this.requestList();
           successAlert("修改成功");
         } else {
           warningAlert(res.data.msg);

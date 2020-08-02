@@ -2,39 +2,48 @@
   <div class="bg">
     <div class="loginBox">
       <p>登录</p>
-      <el-input v-model="user.username" placeholder="请输入内容" clearable> </el-input>
+      <el-input v-model="user.username" placeholder="请输入内容" clearable></el-input>
       <el-input v-model="user.password" placeholder="请输入密码" show-password></el-input>
       <el-button type="primary" @click="login">登录</el-button>
     </div>
   </div>
 </template>
 <script>
-import {requestLogin} from "../../util/request"
-import {successAlert,warningAlert} from "../../util/alert"
+import { requestLogin } from "../../util/request";
+import { successAlert, warningAlert } from "../../util/alert";
+import { mapActions } from "vuex";
 export default {
   components: {},
   data() {
     return {
-      user:{
-        username:"",
-        password:""
-      }
+      user: {
+        username: "",
+        password: "",
+      },
     };
   },
   methods: {
+    ...mapActions({
+      changeUser: "changeUser",
+    }),
     //登录
-    login(){
-      requestLogin(this.user).then(res=>{
-        if(res.data.code==200){
-          successAlert(res.data.msg)
-          this.$router.push("/index")
-        }else{
-          warningAlert(res.data.msg)
+    login() {
+      // this.$router.push("/")
+      requestLogin(this.user).then((res) => {
+        if (res.data.code === 200) {
+          //登录成功
+          successAlert("登录成功");
+          //vuex保存了用户信息
+          this.changeUser(res.data.list);
+          //跳转页面
+          this.$router.push("/home");
+        } else {
+          warningAlert(res.data.msg);
         }
-      })
-    }
+      });
+    },
   },
-  mounted() {}
+  mounted() {},
 };
 </script>
 <style scoped>
